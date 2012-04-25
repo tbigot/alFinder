@@ -56,8 +56,22 @@ showUnidentified = 1
 # écrit les allèles dans le fichier d’allèles
 alleleDiscovering = True
 
-# seuil nb seq nouvelle de l’individu / nb seq total de l’individu
-threshold = 0.2
+# nombre de fois où une séquence nouvelle doit être présente pour être considérée comme nouvelle
+threshold = 8
+
+
+
+### DÉFINITION DE QUELQUES FONCTIONS ###
+
+def suffixFile(filename,suffix):
+    filename = filename.split(".")
+    begining = filename[:-1]
+    for i in range(len(begining)-1):
+        begining.insert(i*2+1,".")
+    extension = filename[-1]
+    return("".join(begining) + suffix + "." + extension)
+
+    
 
 
 ### EXÉCUTION DES FONCTIONS ###
@@ -95,5 +109,12 @@ print("    [DONE]")
 if alleleDiscovering:
     print("Discovering new alleles…"),
     sys.stdout.flush()
-    individual.Individual.discoverNewAlleles(allelesFiles,threshold)
+    
+    # getting the name of the new alleles from the init files
+    newAllelesFiles = []
+    for currFile in allelesFiles:
+        newAllelesFiles.append(suffixFile(currFile,"_new"))
+    
+    
+    individual.Individual.discoverNewAlleles(newAllelesFiles,threshold)
     print("    [DONE]")

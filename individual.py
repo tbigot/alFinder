@@ -87,17 +87,19 @@ class Individual:
     @staticmethod
     def discoverNewAlleles(files,threshold):
 	openFiles = []
-	for file in files:
-	    openFiles.append(open(file,'a'))
-	for currIndiv in Individual._individuals:
-	    currIndiv.oneDiscoverNewAlleles(threshold)
+        for file in files:
+            openFiles.append(open(file,'w'))           
+        for currIndiv in Individual._individuals:
+            currIndiv.oneDiscoverNewAlleles(threshold)
+	# _newAlleles is now filled
+
+	
 	
 	allelleCount = 1
-	# _newAlleles is now filled
 	for locus in Individual._newAlleles.keys():
 	    for sequence in Individual._newAlleles[locus].keys():
 		nrIndividuals = Individual._newAlleles[locus][sequence]
-		openFiles[locus].write(">NewAllele" + str(allelleCount) + " occurrencies="+ str(nrIndividuals))
+		openFiles[locus].write(">NewAllele_" + str(allelleCount) + " nbIndividuals="+ str(nrIndividuals) + " threshold=" + str(threshold))
 		for nbChar in range(len(sequence)):
 		    if (nbChar % 60 == 0):
 			openFiles[locus].write("\n")
@@ -110,7 +112,7 @@ class Individual:
     def oneDiscoverNewAlleles(self,threshold):
 	for locus in self.unknownAlleles.keys():
 	    for allele in self.unknownAlleles[locus].keys():
-		if (self.unknownAlleles[locus][allele] / float(self.seqNr)) >= threshold:
+		if self.unknownAlleles[locus][allele] >= threshold:
 		    if not locus in Individual._newAlleles.keys():
 			Individual._newAlleles[locus] = {}
 		    if not allele in Individual._newAlleles[locus].keys():
