@@ -8,6 +8,10 @@ import sys
 
 INIVERSION = 1
 
+
+# mini config parser inspired from http://www.decalage.info/fr/python/configparser
+# (see the comment by “trinar”)
+
 class ParseINI(dict):
   def __init__(self, f):
     self.f = f
@@ -15,7 +19,7 @@ class ParseINI(dict):
 
   def __read(self):
     with open(self.f, 'r') as f:
-      slovnik = self
+      soi = self
       for line in f:
         if not line.startswith("#") and not line.startswith(';') and line.strip() != "":
           line = line.replace('=', ':')
@@ -25,17 +29,17 @@ class ParseINI(dict):
           line = line.strip()
           if line.startswith("["):
             sections = line[1:-1].split('.')
-            slovnik = self
+            soi = self
             for section in sections:
-              if section not in slovnik:
-                slovnik[section] = {}
-              slovnik = slovnik[section]
+              if section not in soi:
+                soi[section] = {}
+              soi = soi[section]
           else:
             if not self:
-              slovnik['global'] = {}
-              slovnik = slovnik['global']
+              soi['global'] = {}
+              soi = soi['global']
             parts = line.split(":", 1)
-            slovnik[parts[0].strip()] = parts[1].strip()
+            soi[parts[0].strip()] = parts[1].strip()
 
   def items(self, section):
     try:
