@@ -6,60 +6,58 @@ import read
 import individual
 import sys
 
+INIVERSION = 1
 
-### VARIABLES ###
+class ParseINI(dict):
+  def __init__(self, f):
+    self.f = f
+    self.__read()
 
-# séquences Fasta
-# ===============
-# pour un run donné
+  def __read(self):
+    with open(self.f, 'r') as f:
+      slovnik = self
+      for line in f:
+        if not line.startswith("#") and not line.startswith(';') and line.strip() != "":
+          line = line.replace('=', ':')
+          line = line.replace(';', '#')
+          index = line.find('#')
+          line = line[:index]
+          line = line.strip()
+          if line.startswith("["):
+            sections = line[1:-1].split('.')
+            slovnik = self
+            for section in sections:
+              if section not in slovnik:
+                slovnik[section] = {}
+              slovnik = slovnik[section]
+          else:
+            if not self:
+              slovnik['global'] = {}
+              slovnik = slovnik['global']
+            parts = line.split(":", 1)
+            slovnik[parts[0].strip()] = parts[1].strip()
 
-fastaSequencesFile = "data/1.fas"
+  def items(self, section):
+    try:
+      return self[section]
+    except KeyError:
+      return []
+try:
+    ini = ParseINI('settings.ini')
+except IOError, e:
+    print("You have no configuration file. Please copy config.sample.ini to config.ini and update the settings.")
+    sys.exit()
+    
+if int(ini['global']['iniVersion']) < INIVERSION: 
+    print("Your version of settings is too old. Please copy settings.sample.ini to settings.ini and update the settings.")
+    sys.exit()
 
-
-# tags d’identification des individus et des locus
-# ================================================
-# une ligne par individu, puis des paires de tags (brin droit, reverse)
-# pour chaque locus, dans un ordre déterminé
-# Exemple:
-# individu1,tagLocus1Forward,tagLocus1Reverse,tagLocus2Forward,tagLocus2Reverse
-# soit n le nombre de locus, on a ici 2n tags
-
-tagsFile = "data/tagsRun1.csv"
-
-# allèles
-# =======
-# liste de n fichiers (n étant le nombre de locus)
-# TRÈS IMPORTANT:
-#    1/ Il doit y avoir strictement n fichiers, n étant fixé par le fichier précédent (tags)
-#    2/ Les fichiers doivent être dans l’ordre des locus de l’étape précédente (tags)
-# dans chaque fichier, on doit avoir autant de séquences fasta que d’Allèles
-
-allelesFiles = ["data/Mama-DRB1.fas","data/Mama-DRB2.fas","data/Mama-UB.fas","data/Mama-UD.fas"]
-
+    
 # sortie
 # ======
 # Fichier de sortie où seront écrits les résultats
 
-resultFile = fastaSequencesFile.split('.')[0] +"_result.csv"
-
-# doit-on afficher dans les résultats les allèles non identifiés
-# [0,1,2]
-# 0 : n’afficher que les séquences identifiées à l’allèle connu
-# 1 : n’afficher que les séquences identifiées, allèle potentiellement inconnu
-# 2 : tout afficher
-
-showUnidentified = 1
-
-# allele discovering
-# ==================
-
-# écrit les allèles dans le fichier d’allèles
-alleleDiscovering = True
-
-# nombre de fois où une séquence nouvelle doit être présente pour être considérée comme nouvelle
-threshold = 8
-
-
+resultFile = ini['Files']['fastaSequences'].split('.')[0] +"_result.csv"
 
 ### DÉFINITION DE QUELQUES FONCTIONS ###
 
@@ -76,14 +74,14 @@ def suffixFile(filename,suffix):
 
 ### EXÉCUTION DES FONCTIONS ###
 
-print("Loading sequences from file " + fastaSequencesFile + "…"),
+print("Loading sequences from file " + ini['Files']['fastaSequences'] + "…"),
 sys.stdout.flush()
-read.Read.loadFromFile(fastaSequencesFile)
+read.Read.loadFromFile(ini['Files']['fastaSequences'])
 print("    [DONE]")
 
-print("Loading individuals from file " + tagsFile + "…"),
+print("Loading individuals from file " + ini['Files']['tags'] + "…"),
 sys.stdout.flush()
-individual.Individual.loadFromFile(tagsFile)
+individual.Individual.loadFromFile(ini['Files']['tags'])
 print("    [DONE]")
 
 print("Sequences are now being associated to individuals/loci according to their tags…"),
@@ -91,9 +89,12 @@ sys.stdout.flush()
 read.Read.identify(individual.Individual.getTagsList())
 print("    [DONE]")
 
-print("Loading alleles from " + str(len(allelesFiles)) +  " file…"),
+
+## getting alleles files
+
+print("Loading alleles from " + str(ini['Files']['Alleles'].values()) +  " file…"),
 sys.stdout.flush()
-individual.Individual.loadLociFromFiles(allelesFiles)
+individual.Individual.loadLociFromFiles(ini['Files']['Alleles'].values())
 print("    [DONE]")
 
 print("Sequences are now being associated to allelles…"),
@@ -103,18 +104,18 @@ print("    [DONE]")
 
 print("Writing result to file " + resultFile +"…"),
 sys.stdout.flush()
-read.Read.writeTo(resultFile,showUnidentified)
+read.Read.writeTo(resultFile,ini['Results']['showUnidentified'])
 print("    [DONE]")
 
-if alleleDiscovering:
+if ini['AlleleDiscovering']['discovering'] == "True":
     print("Discovering new alleles…"),
     sys.stdout.flush()
     
     # getting the name of the new alleles from the init files
     newAllelesFiles = []
-    for currFile in allelesFiles:
+    for currFile in ini['Files']['Alleles'].values():
         newAllelesFiles.append(suffixFile(currFile,"_new"))
     
     
-    individual.Individual.discoverNewAlleles(newAllelesFiles,threshold)
+    individual.Individual.discoverNewAlleles(newAllelesFiles,int(ini['AlleleDiscovering']['threshold']))
     print("    [DONE]")
