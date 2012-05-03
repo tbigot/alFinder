@@ -49,7 +49,7 @@ class ParseINI(dict):
 try:
     ini = ParseINI('settings.ini')
 except IOError, e:
-    print("You have no configuration file. Please copy config.sample.ini to config.ini and update the settings.")
+    print("You have no configuration file. Please copy settings.sample.ini to settings.ini and update the settings.")
     sys.exit()
     
 if int(ini['global']['iniVersion']) < INIVERSION: 
@@ -108,7 +108,7 @@ print("    [DONE]")
 
 print("Writing result to file " + resultFile +"…"),
 sys.stdout.flush()
-read.Read.writeTo(resultFile,ini['Results']['showUnidentified'])
+read.Read.writeTo(resultFile,int(ini['Results']['showUnidentified']))
 print("    [DONE]")
 
 if ini['AlleleDiscovering']['discovering'] == "True":
