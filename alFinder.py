@@ -106,10 +106,6 @@ sys.stdout.flush()
 read.Read.match(individual.Individual._alleles)
 print("    [DONE]")
 
-print("Writing result to file " + resultFile +"…"),
-sys.stdout.flush()
-read.Read.writeTo(resultFile,int(ini['Results']['showUnidentified']))
-print("    [DONE]")
 
 if ini['AlleleDiscovering']['discovering'] == "True":
     print("Discovering new alleles…"),
@@ -123,3 +119,15 @@ if ini['AlleleDiscovering']['discovering'] == "True":
     
     individual.Individual.discoverNewAlleles(newAllelesFiles,int(ini['AlleleDiscovering']['threshold']))
     print("    [DONE]")
+    
+    print("Unidentified sequences are now being associated to new allelles…"),
+    sys.stdout.flush()
+    read.Read.match(individual.Individual._newAlleles)
+    print("    [DONE]")
+    
+    
+
+print("Writing result to file " + resultFile +"…"),
+sys.stdout.flush()
+read.Read.writeTo(resultFile,int(ini['Results']['showUnidentified']))
+print("    [DONE]")

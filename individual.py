@@ -10,7 +10,8 @@ class Individual:
     _nrLoci = 0
     _alleles = []
     
-    _newAlleles = {}
+    _newAllelesPerIndividual = {}
+    _newAlleles = []
     
     def __init__(self,name,tags):
 	self.unknownAlleles = {}
@@ -18,7 +19,7 @@ class Individual:
 	self.name = name
 	self.tags = []
 	if len(tags)%2 != 0:
-	    print("Odd number of tags: there will be problems.")
+	    print("Odd number of tags: problems will occur.")
 	currPair = 0
 	while currPair != len(tags)/2:
 	    tag1 = tags[currPair*2]
@@ -91,14 +92,16 @@ class Individual:
             openFiles.append(open(file,'w'))           
         for currIndiv in Individual._individuals:
             currIndiv.oneDiscoverNewAlleles(threshold)
-	# _newAlleles is now filled
+	# _newAllelesPerIndividual is now filled
 
-	
+	for i in range(len(Individual._alleles)):
+            Individual._newAlleles.append({})
 	
 	allelleCount = 1
-	for locus in Individual._newAlleles.keys():
-	    for sequence in Individual._newAlleles[locus].keys():
-		nrIndividuals = Individual._newAlleles[locus][sequence]
+	for locus in Individual._newAllelesPerIndividual.keys():
+	    for sequence in Individual._newAllelesPerIndividual[locus].keys():
+                Individual._newAlleles[locus]["NewAllele_" + str(allelleCount)] = sequence
+		nrIndividuals = Individual._newAllelesPerIndividual[locus][sequence]
 		openFiles[locus].write(">NewAllele_" + str(allelleCount) + " nbIndividuals="+ str(nrIndividuals) + " threshold=" + str(threshold))
 		for nbChar in range(len(sequence)):
 		    if (nbChar % 60 == 0):
@@ -113,12 +116,12 @@ class Individual:
 	for locus in self.unknownAlleles.keys():
 	    for allele in self.unknownAlleles[locus].keys():
 		if self.unknownAlleles[locus][allele] >= threshold:
-		    if not locus in Individual._newAlleles.keys():
-			Individual._newAlleles[locus] = {}
-		    if not allele in Individual._newAlleles[locus].keys():
-			Individual._newAlleles[locus][allele] = 1
-			print("\nIndiv = "+ self.name + " ; " + str(self.unknownAlleles[locus][allele] / float(self.seqNr)) + " - " + str(self.seqNr))
+		    if not locus in Individual._newAllelesPerIndividual.keys():
+			Individual._newAllelesPerIndividual[locus] = {}
+		    if not allele in Individual._newAllelesPerIndividual[locus].keys():
+			Individual._newAllelesPerIndividual[locus][allele] = 1
+			#print("\nIndiv = "+ self.name + " ; " + str(self.unknownAlleles[locus][allele] / float(self.seqNr)) + " - " + str(self.seqNr))
 		    else:
-			Individual._newAlleles[locus][allele] += 1
+			Individual._newAllelesPerIndividual[locus][allele] += 1
 			
 		   

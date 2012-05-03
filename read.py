@@ -97,7 +97,8 @@ class Read:
     def match(alleles):
 	for currRead in Read._reads:
 	    if currRead.identified:
-		currRead.oneMatch(alleles)
+                if not currRead.matched:
+                    currRead.oneMatch(alleles)
     
     def oneMatch(self,alleles):
 	currAllelles = alleles[self.locus]
@@ -111,4 +112,5 @@ class Read:
 	    self.individual.addUnknownAllele(self.locus,self.seq[6:-6])
 
 	 
+   
 		
