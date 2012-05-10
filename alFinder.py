@@ -6,7 +6,9 @@ import read
 import individual
 import sys
 
-INIVERSION = 1
+print("       __               \n _  | |_  o __  _| _  __\n(_| | |   | | |(_|(/_ | \n")
+
+INIVERSION = 2
 
 
 # mini config parser inspired from http://www.decalage.info/fr/python/configparser
@@ -88,9 +90,16 @@ sys.stdout.flush()
 individual.Individual.loadFromFile(ini['Files']['tags'])
 print("    [DONE]")
 
-print("Sequences are now being associated to individuals/loci according to their tags…"),
+print("Loading loci markers…"),
 sys.stdout.flush()
-read.Read.identify(individual.Individual.getTagsList())
+print(ini['LociMarkers'])
+individual.Individual.setLociMarkers(ini['LociMarkers'])
+print("    [DONE]")
+
+
+print("Sequences are now being associated to loci/individual according to their tags…"),
+sys.stdout.flush()
+read.Read.identify(individual.Individual)
 print("    [DONE]")
 
 
@@ -98,7 +107,7 @@ print("    [DONE]")
 
 print("Loading alleles from " + str(ini['Files']['Alleles'].values()) +  " file…"),
 sys.stdout.flush()
-individual.Individual.loadLociFromFiles(ini['Files']['Alleles'].values())
+individual.Individual.loadLociFromFiles(ini['Files']['Alleles'])
 print("    [DONE]")
 
 print("Sequences are now being associated to allelles…"),

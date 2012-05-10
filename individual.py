@@ -2,6 +2,7 @@
 
 import read
 import sys
+import re
 
 class Individual:
     
@@ -9,7 +10,8 @@ class Individual:
     _tags = {}
     _nrLoci = 0
     _alleles = []
-    
+    _lociRE = []
+
     _newAllelesPerIndividual = {}
     _newAlleles = []
     
@@ -20,13 +22,18 @@ class Individual:
 	self.tags = []
 	if len(tags)%2 != 0:
 	    print("Odd number of tags: problems will occur.")
-	currPair = 0
-	while currPair != len(tags)/2:
-	    tag1 = tags[currPair*2]
-	    tag2 = read.Read.reverseComplementary(tags[currPair*2+1])
+	currAllele = 0
+	while currAllele*2 != len(tags):
+	    tag1 = tags[currAllele*2]
+	    tag2 = read.Read.reverseComplementary(tags[currAllele*2+1])
+	    #tag2 = tags[currAllele*2+1]
 	    self.tags.append((tag1,tag2))
-	    Individual._tags[(tag1,tag2)]=(self,currPair)
-	    currPair += 1
+	    
+	    if (currAllele,tag1,tag2) in Individual._tags.keys():
+                print("Duplicate entry for allele " + str(currAllele+1) + str((tag1,tag2)))
+            else :
+                Individual._tags[(currAllele,(tag1,tag2))]=self
+	    currAllele += 1
 	    
 	    
 	
@@ -39,6 +46,29 @@ class Individual:
     @staticmethod
     def getIndividuals():
 	return Individual._individuals
+	
+    @staticmethod
+    def seqToRegExp(sequence):
+        reLst = []
+        for nt in sequence:
+            if len(nt) == 1:
+                reLst.append(nt[0])
+            else:
+                reLst.append("["+''.join(nt) + ']')
+        reStr = ''.join(reLst)
+        print(reStr)
+        return(re.compile(reStr))
+                    
+    
+    @staticmethod
+    def setLociMarkers(markers):
+        currPair = 0
+        while currPair*2 != len(markers):
+            markerF = read.Read.unWobble(markers[str(currPair*2)],"F")
+            markerR = read.Read.unWobble(markers[str(currPair*2+1)],"R")
+            Individual._lociRE.append((Individual.seqToRegExp(markerF),Individual.seqToRegExp(markerR)))
+            currPair += 1
+        
 	
     @staticmethod
     def getTagsList():
@@ -69,7 +99,9 @@ class Individual:
 	    print("You must provide " + str(Individual._nrLoci) + " files. I cannot proceed with " + str(len(files)) +".")
 	    return
 	else:
-	    for currPath in files:
+            print(files)
+            for fileNumber in range(len(files)):
+                currPath = files[str(fileNumber)]
 		currFile = open(currPath)
 		currName = ''
 		currSeq = ''

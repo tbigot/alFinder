@@ -6,20 +6,41 @@ import string
 
 class Read:
     
+    wobbles = {'r': ('A','G'), 'w': ('A','T'), 'm': ('A','C'), 'y': ('C','T'), 's': ('C','G'), 'k': ('G','T'), 'b': ('C','T','G'), 'd': ('A','G','T'), 'h': ('A','C','T'), 'v': ('A','C','G'), 'n': ('A','C','G','T')}
+    
+    
     _reads = []
     complementaries = {'A':'T','T':'A','G':'C','C':'G','N':'N'}
+    
+    
+    @staticmethod
+    def unWobble(inString,strand):
+        allowedList = list(inString)
+        for it in range(len(allowedList)):
+            if allowedList[it] in Read.wobbles.keys():
+                allowedList[it] = Read.wobbles[allowedList[it]]
+            else:
+                allowedList[it] = [allowedList[it]]
+        if(strand == "R"):
+            finalList = []
+            for it in allowedList[::-1]:
+                sl = []
+                for el in it:
+                    sl.append(Read.complementaries[el])
+                finalList.append(sl)
+            return(finalList)
+        else:
+            return(allowedList)
+                
     
     
     def __init__(self,seq):
 	self.name = seq[0][1:].split()[0]
 	self.individual = None
-	self.individualName = '<unidentified>'
-	self.locus = '<unidentified>'
+	self.locus = None
 	self.seq = string.join(seq[1:],'')
 	self.rev = False
-	self.identified = False
-	self.allelle = '<unknown>'
-	self.matched = False
+	self.allele = None
 	
     def __str__(self):
 	return 'Sequence ' + self.name + "; Individual " + str(self.individualName) + "; Locus " + str(self.locus)
@@ -67,48 +88,62 @@ class Read:
 	    currRead.oneWriteTo(o,showUnidentified)
 	    
     def oneWriteTo(self,output,showUnidentified):
-	if (showUnidentified == 2 or (showUnidentified == 1 and self.identified) or (showUnidentified == 0 and self.matched)):
-	    output.write("\n" + self.name + "," + self.individualName + "," + str(self.locus) + "," + self.allelle)
+	if (showUnidentified == 2 or (showUnidentified == 1 and self.individual != None) or (showUnidentified == 0 and self.allele != None)):
+            if self.individual != None:
+                indivName = self.individual.getName()
+            else:
+                indivName = "<unidentified>"
+            if self.locus != None:
+                locusName = str(self.locus+1)
+            else:
+                locusName = "<unidentified>"
+            if self.allele != None:
+                alleleName = self.allele
+            else:
+                alleleName = '<unidentified>'
+	    output.write("\n" + self.name + "," + indivName + "," + locusName + "," + alleleName)
     
     @staticmethod
-    def identify(indivList):
+    def identify(IndividualClass):
 	for currRead in Read._reads:
-	    currRead.oneIdentify(indivList)
+	    currRead.oneIdentify(IndividualClass)
     
-    def oneIdentify(self,indivList):
+    def oneIdentify(self,IndividualClass):
+        
+        # step 1 which locus is it?
+        for currLocusRE in range(len(IndividualClass._lociRE)):
+            if IndividualClass._lociRE[currLocusRE][0].search(self.seq) and IndividualClass._lociRE[currLocusRE][1].search(self.seq):
+                self.locus = currLocusRE
+                break
+        if self.locus == None and not self.rev:
+            self.reverse()
+            self.oneIdentify(IndividualClass)
+        
+        
+        # step 2: knowing locus, which individual is it?
+        if self.locus == None or self.individual != None:
+            return
+            
 	tags = self.getTags()
-	#Debug
-	#print("Looking for " + str(tags) + " in the list.")
-	if tags in indivList:
-	    found = indivList[self.getTags()]
-	    self.individual = found[0]
-	    self.individualName = self.individual.getName()
-	    self.locus = found[1]
-	    self.identified = True
-	    # debug
-	    #print("Séquence " + self.name + " identifiée. Individual = "+ self.individualName.getName() + ". Locus = " + str(self.locus))
-	elif not self.rev:
-	    self.reverse()
-	    Read.oneIdentify(self,indivList)
-	#else:
-	    #print("Impossible d’identifier la séquence "+ self.name +". Désolé.")
+	if (self.locus,tags) in IndividualClass._tags:
+	    self.individual = IndividualClass._tags[self.locus,tags]
+	    
 	    
     @staticmethod
     def match(alleles):
 	for currRead in Read._reads:
-	    if currRead.identified:
-                if not currRead.matched:
+	    if currRead.individual != None:
+                if currRead.allele == None:
                     currRead.oneMatch(alleles)
     
     def oneMatch(self,alleles):
-	currAllelles = alleles[self.locus]
-	for currAllelleName in currAllelles.keys():
-	    if currAllelles[currAllelleName] in self.seq:
-		self.allelle = currAllelleName
-		self.matched = True
+	currAlleles = alleles[self.locus]
+	for currAlleleName in currAlleles.keys():
+	    if currAlleles[currAlleleName] in self.seq:
+		self.allele = currAlleleName
 		break
 	self.individual.raiseSeqNr()
-	if(not self.matched):
+	if(self.allele == None):
 	    self.individual.addUnknownAllele(self.locus,self.seq[6:-6])
 
 	 
