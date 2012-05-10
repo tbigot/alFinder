@@ -112,7 +112,7 @@ class Read:
         
         # step 1 which locus is it?
         for currLocusRE in range(len(IndividualClass._lociRE)):
-            if IndividualClass._lociRE[currLocusRE][0].search(self.seq) and IndividualClass._lociRE[currLocusRE][1].search(self.seq):
+            if IndividualClass._lociRE[currLocusRE].search(self.seq):
                 self.locus = currLocusRE
                 break
         if self.locus == None and not self.rev:

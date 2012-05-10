@@ -56,8 +56,8 @@ class Individual:
             else:
                 reLst.append("["+''.join(nt) + ']')
         reStr = ''.join(reLst)
-        print(reStr)
-        return(re.compile(reStr))
+        return(reStr)
+        
                     
     
     @staticmethod
@@ -66,7 +66,7 @@ class Individual:
         while currPair*2 != len(markers):
             markerF = read.Read.unWobble(markers[str(currPair*2)],"F")
             markerR = read.Read.unWobble(markers[str(currPair*2+1)],"R")
-            Individual._lociRE.append((Individual.seqToRegExp(markerF),Individual.seqToRegExp(markerR)))
+            Individual._lociRE.append(re.compile(Individual.seqToRegExp(markerF)+".+"+Individual.seqToRegExp(markerR)))
             currPair += 1
         
 	
