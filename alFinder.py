@@ -122,8 +122,11 @@ if ini['AlleleDiscovering']['discovering'] == "True":
     
     # getting the name of the new alleles from the init files
     newAllelesFiles = []
-    for currFile in ini['Files']['Alleles'].values():
-        newAllelesFiles.append(suffixFile(currFile,"_new"))
+    
+    filesIdx = ini['Files']['Alleles'].keys()
+    filesIdx.sort()
+    for currFileIndex in filesIdx:
+        newAllelesFiles.append(suffixFile(ini['Files']['Alleles'][currFileIndex],"_new"))
     
     
     individual.Individual.discoverNewAlleles(newAllelesFiles,int(ini['AlleleDiscovering']['threshold']))
