@@ -99,10 +99,7 @@ class Individual:
 	    print("You must provide " + str(Individual._nrLoci) + " files. I cannot proceed with " + str(len(files)) +".")
 	    return
 	else:
-            print(files)
-            for fileNumber in range(len(files)):
-                currPath = files[str(fileNumber)]
-		currFile = open(currPath)
+            for currFile in files:
 		currName = ''
 		currSeq = ''
 		result = {}
@@ -118,10 +115,8 @@ class Individual:
 		Individual._alleles.append(result)
 		
     @staticmethod
-    def discoverNewAlleles(files,threshold):
-	openFiles = []
-        for file in files:
-            openFiles.append(open(file,'w'))           
+    def discoverNewAlleles(files,cropLengths,threshold):
+        
         for currIndiv in Individual._individuals:
             currIndiv.oneDiscoverNewAlleles(threshold)
 	# _newAllelesPerIndividual is now filled
@@ -134,12 +129,16 @@ class Individual:
 	    for sequence in Individual._newAllelesPerIndividual[locus].keys():
                 Individual._newAlleles[locus]["NewAllele_" + str(allelleCount)] = sequence
 		nrIndividuals = Individual._newAllelesPerIndividual[locus][sequence]
-		openFiles[locus].write(">NewAllele_" + str(allelleCount) + " nbIndividuals="+ str(nrIndividuals) + " threshold=" + str(threshold))
+		files[locus].write(">NewAllele_" + str(allelleCount) + " nbIndividuals="+ str(nrIndividuals) + " threshold=" + str(threshold))
+		
+		# cropping sequence
+		sequence = sequence[int(cropLengths[locus*2]):-int(cropLengths[locus*2+1])]
+		
 		for nbChar in range(len(sequence)):
 		    if (nbChar % 60 == 0):
-			openFiles[locus].write("\n")
-		    openFiles[locus].write(sequence[nbChar])
-		openFiles[locus].write("\n")
+			files[locus].write("\n")
+		    files[locus].write(sequence[nbChar])
+		files[locus].write("\n")
 		print("."),
 		sys.stdout.flush()
 		allelleCount += 1

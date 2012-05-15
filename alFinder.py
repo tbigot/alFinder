@@ -8,7 +8,7 @@ import sys
 
 print("       __               \n _  | |_  o __  _| _  __\n(_| | |   | | |(_|(/_ | \n")
 
-INIVERSION = 2
+INIVERSION = 3
 
 
 # mini config parser inspired from http://www.decalage.info/fr/python/configparser
@@ -48,6 +48,15 @@ class ParseINI(dict):
       return self[section]
     except KeyError:
       return []
+      
+def iniDictToList(pdict):
+    rlist = []
+    keys = pdict.keys()
+    keys.sort()
+    for currEntry in keys:
+        rlist.append(pdict[currEntry])
+    return(rlist)
+
 try:
     ini = ParseINI('settings.ini')
 except IOError, e:
@@ -97,7 +106,7 @@ individual.Individual.setLociMarkers(ini['LociMarkers'])
 print("    [DONE]")
 
 
-print("Sequences are now being associated to loci/individual according to their tags…"),
+print("Sequences are now being associated to loci/individual according to their markers/tags…"),
 sys.stdout.flush()
 read.Read.identify(individual.Individual)
 print("    [DONE]")
@@ -105,9 +114,21 @@ print("    [DONE]")
 
 ## getting alleles files
 
+
 print("Loading alleles from " + str(ini['Files']['Alleles'].values()) +  " file…"),
 sys.stdout.flush()
-individual.Individual.loadLociFromFiles(ini['Files']['Alleles'])
+
+allelesFilesF = []
+
+allelesFiles = iniDictToList(ini['Files']['Alleles'])
+for cFile in allelesFiles:
+    allelesFilesF.append(open(cFile,"r"))
+
+individual.Individual.loadLociFromFiles(allelesFilesF)
+
+for currFile in allelesFilesF:
+    currFile.close()
+
 print("    [DONE]")
 
 print("Sequences are now being associated to allelles…"),
@@ -116,20 +137,25 @@ read.Read.match(individual.Individual._alleles)
 print("    [DONE]")
 
 
-if ini['AlleleDiscovering']['discovering'] == "True":
+if ini['AlleleDiscovering']['discovering'].upper() == "TRUE":
     print("Discovering new alleles…"),
     sys.stdout.flush()
     
-    # getting the name of the new alleles from the init files
-    newAllelesFiles = []
+    newAllelesFilesF = []
     
-    filesIdx = ini['Files']['Alleles'].keys()
-    filesIdx.sort()
-    for currFileIndex in filesIdx:
-        newAllelesFiles.append(suffixFile(ini['Files']['Alleles'][currFileIndex],"_new"))
+    if ini['AlleleDiscovering']['toNewFiles'].upper() == "TRUE":  
+        for cFile in allelesFiles:
+            newAllelesFilesF.append(open(suffixFile(cFile,"_new"),"w"))
+    else:
+        for cFile in alleleFiles:
+            newAllelesFilesF.append(open(cFile,"a"))
     
     
-    individual.Individual.discoverNewAlleles(newAllelesFiles,int(ini['AlleleDiscovering']['threshold']))
+    individual.Individual.discoverNewAlleles(newAllelesFilesF,iniDictToList(ini['AlleleDiscovering']['CropLengths']),int(ini['AlleleDiscovering']['threshold']))
+    
+    for currFile in newAllelesFilesF:
+        currFile.close()
+    
     print("    [DONE]")
     
     print("Unidentified sequences are now being associated to new allelles…"),
@@ -141,5 +167,6 @@ if ini['AlleleDiscovering']['discovering'] == "True":
 
 print("Writing result to file " + resultFile +"…"),
 sys.stdout.flush()
-read.Read.writeTo(resultFile,int(ini['Results']['showUnidentified']))
+
+read.Read.writeTo(resultFile,int(ini['Results']['showUnidentified']),)
 print("    [DONE]")
