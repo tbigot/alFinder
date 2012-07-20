@@ -66,7 +66,7 @@ class Individual:
         while currPair*2 != len(markers):
             markerF = read.Read.unWobble(markers[str(currPair*2)],"F")
             markerR = read.Read.unWobble(markers[str(currPair*2+1)],"R")
-            Individual._lociRE.append(re.compile(".{6}" + Individual.seqToRegExp(markerF)+".+"+Individual.seqToRegExp(markerR) + ".{6}"))
+            Individual._lociRE.append(re.compile(".{6}" + Individual.seqToRegExp(markerF)+".+"+Individual.seqToRegExp(markerR) + ".{6}$"))
             currPair += 1
         
 	
