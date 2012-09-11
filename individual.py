@@ -77,6 +77,9 @@ class Individual:
     def raiseSeqNr(self):
 	self.seqNr += 1
 	
+    def getSeqNr(self):
+        return(self.seqNr)
+	
     def addUnknownAllele(self,locus,sequence):
 	if not locus in self.unknownAlleles.keys():
 	    self.unknownAlleles[locus] = {}
@@ -118,9 +121,19 @@ class Individual:
     def discoverNewAlleles(files,cropLengths,threshold):
         
         for currIndiv in Individual._individuals:
-            currIndiv.oneDiscoverNewAlleles(threshold)
+            currIndiv.oneDiscoverNewAlleles()
 	# _newAllelesPerIndividual is now filled
-
+        
+        # now, deleting sequences that are below the threshold
+        for currLocus in Individual._newAllelesPerIndividual.keys():
+            allelesToBeDeleted = []
+            for currAllele in Individual._newAllelesPerIndividual[currLocus]:
+                if (len(currAllele)-(int(cropLengths[currLocus*2])+int(cropLengths[currLocus*2+1])))%3 != 0 or Individual._newAllelesPerIndividual[currLocus][currAllele] < threshold:
+                    allelesToBeDeleted.append(currAllele)
+            for currATBD in allelesToBeDeleted:
+                Individual._newAllelesPerIndividual[currLocus].pop(currATBD)
+        
+        
 	for i in range(len(Individual._alleles)):
             Individual._newAlleles.append({})
 	
@@ -129,7 +142,7 @@ class Individual:
 	    for sequence in Individual._newAllelesPerIndividual[locus].keys():
                 Individual._newAlleles[locus]["NewAllele_" + str(allelleCount)] = sequence
 		nrIndividuals = Individual._newAllelesPerIndividual[locus][sequence]
-		files[locus].write(">NewAllele_" + str(allelleCount) + " nbIndividuals="+ str(nrIndividuals) + " threshold=" + str(threshold))
+		files[locus].write(">NewAllele_" + str(allelleCount) + " count="+ str(nrIndividuals) + " threshold=" + str(threshold))
 		
 		# cropping sequence
 		sequence = sequence[int(cropLengths[locus*2]):-int(cropLengths[locus*2+1])]
@@ -143,16 +156,15 @@ class Individual:
 		sys.stdout.flush()
 		allelleCount += 1
 	    
-    def oneDiscoverNewAlleles(self,threshold):
+    def oneDiscoverNewAlleles(self):
 	for locus in self.unknownAlleles.keys():
 	    for allele in self.unknownAlleles[locus].keys():
-		if self.unknownAlleles[locus][allele] >= threshold:
-		    if not locus in Individual._newAllelesPerIndividual.keys():
-			Individual._newAllelesPerIndividual[locus] = {}
-		    if not allele in Individual._newAllelesPerIndividual[locus].keys():
-			Individual._newAllelesPerIndividual[locus][allele] = 1
-			#print("\nIndiv = "+ self.name + " ; " + str(self.unknownAlleles[locus][allele] / float(self.seqNr)) + " - " + str(self.seqNr))
-		    else:
-			Individual._newAllelesPerIndividual[locus][allele] += 1
-			
+                if not locus in Individual._newAllelesPerIndividual.keys():
+                    Individual._newAllelesPerIndividual[locus] = {}
+                if not allele in Individual._newAllelesPerIndividual[locus].keys():
+                    Individual._newAllelesPerIndividual[locus][allele] = self.unknownAlleles[locus][allele]
+                    #print("\nIndiv = "+ self.name + " ; " + str(self.unknownAlleles[locus][allele] / float(self.seqNr)) + " - " + str(self.seqNr))
+                else:
+                    Individual._newAllelesPerIndividual[locus][allele] += self.unknownAlleles[locus][allele]
+                    
 		   

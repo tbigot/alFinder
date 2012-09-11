@@ -127,22 +127,24 @@ class Read:
 	tags = self.getTags()
 	if (self.locus,tags) in IndividualClass._tags:
 	    self.individual = IndividualClass._tags[self.locus,tags]
+	    self.individual.raiseSeqNr()
 	    
 	    
     @staticmethod
-    def match(alleles):
+    def match(alleles,minNumberOfSeqsPerIndividual):
 	for currRead in Read._reads:
 	    if currRead.individual != None:
                 if currRead.allele == None:
-                    currRead.oneMatch(alleles)
+                    currRead.oneMatch(alleles,minNumberOfSeqsPerIndividual)
     
-    def oneMatch(self,alleles):
+    def oneMatch(self,alleles,minNumberOfSeqsPerIndividual):
+        if self.individual.getSeqNr() < minNumberOfSeqsPerIndividual:
+            return
 	currAlleles = alleles[self.locus]
 	for currAlleleName in currAlleles.keys():
 	    if currAlleles[currAlleleName] in self.seq:
 		self.allele = currAlleleName
 		break
-	self.individual.raiseSeqNr()
 	if(self.allele == None):
 	    self.individual.addUnknownAllele(self.locus,self.seq[6:-6])
 

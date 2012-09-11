@@ -8,7 +8,7 @@ import sys
 
 print("       __               \n _  | |_  o __  _| _  __\n(_| | |   | | |(_|(/_ | \n")
 
-INIVERSION = 3
+INIVERSION = 4
 
 
 # mini config parser inspired from http://www.decalage.info/fr/python/configparser
@@ -133,7 +133,7 @@ print("    [DONE]")
 
 print("Sequences are now being associated to allelles…"),
 sys.stdout.flush()
-read.Read.match(individual.Individual._alleles)
+read.Read.match(individual.Individual._alleles,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
 print("    [DONE]")
 
 
@@ -160,7 +160,7 @@ if ini['AlleleDiscovering']['discovering'].upper() == "TRUE":
     
     print("Unidentified sequences are now being associated to new allelles…"),
     sys.stdout.flush()
-    read.Read.match(individual.Individual._newAlleles)
+    read.Read.match(individual.Individual._newAlleles,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
     print("    [DONE]")
     
     
