@@ -70,7 +70,7 @@ class Read:
 	fhandle = open(path)
 	currSeq = []
 	for ligne in fhandle:
-	    if ligne.startswith('>'):
+	    if ligne.startswith('>') or not ligne.endswith('\n'):
 		if not len(currSeq) == 0:
 		    Read._reads.append(Read(currSeq))
 		    currSeq = []
