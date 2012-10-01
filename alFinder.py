@@ -108,8 +108,11 @@ print("    [DONE]")
 
 print("Sequences are now being associated to loci/individual according to their markers/tags…"),
 sys.stdout.flush()
-read.Read.identify(individual.Individual)
+(identifiedLoci,identifiedIndividuals) = read.Read.identify(individual.Individual)
 print("    [DONE]")
+
+print ("*** Identified Loci : " + str(identifiedLoci) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*identifiedLoci / float(read.Read.getNumberOfReads()))) + "%)" )
+print ("*** Identified Individuals : " + str(identifiedIndividuals) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*identifiedIndividuals / float(read.Read.getNumberOfReads()))) + "%)" )
 
 
 ## getting alleles files
@@ -133,8 +136,9 @@ print("    [DONE]")
 
 print("Sequences are now being associated to allelles…"),
 sys.stdout.flush()
-read.Read.match(individual.Individual._alleles,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
+numberMatching = read.Read.match(individual.Individual._alleles,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
 print("    [DONE]")
+print ("*** Matching Read : " + str(numberMatching) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*numberMatching / float(read.Read.getNumberOfReads()))) + "%)" )
 
 
 if ini['AlleleDiscovering']['discovering'].upper() == "TRUE":
@@ -160,9 +164,9 @@ if ini['AlleleDiscovering']['discovering'].upper() == "TRUE":
     
     print("Unidentified sequences are now being associated to new allelles…"),
     sys.stdout.flush()
-    read.Read.match(individual.Individual._newAlleles,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
+    numberMatching = read.Read.match(individual.Individual._newAlleles,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
     print("    [DONE]")
-    
+    print ("*** Matching Read : " + str(numberMatching) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*numberMatching / float(read.Read.getNumberOfReads()))) + "%)" )
     
 
 print("Writing result to file " + resultFile +"…"),

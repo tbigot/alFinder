@@ -13,6 +13,7 @@ class Read:
     complementaries = {'A':'T','T':'A','G':'C','C':'G','N':'N'}
     
     
+    
     @staticmethod
     def unWobble(inString,strand):
         allowedList = list(inString)
@@ -64,7 +65,11 @@ class Read:
     @staticmethod
     def getReads():
 	return Read._reads
-	
+    
+    @staticmethod
+    def getNumberOfReads():
+        return len(Read._reads)
+    
     @staticmethod
     def loadFromFile(path):
 	fhandle = open(path)
@@ -112,8 +117,15 @@ class Read:
     
     @staticmethod
     def identify(IndividualClass):
+        identifiedLoci = 0
+        identifiedIndividuals = 0
 	for currRead in Read._reads:
 	    currRead.oneIdentify(IndividualClass)
+	    if currRead.locus != None:
+                identifiedLoci += 1
+            if currRead.individual != None:
+                identifiedIndividuals += 1
+        return((identifiedLoci,identifiedIndividuals))
     
     def oneIdentify(self,IndividualClass):
         
@@ -139,10 +151,14 @@ class Read:
 	    
     @staticmethod
     def match(alleles,minNumberOfSeqsPerIndividual):
+        numberMatching = 0
 	for currRead in Read._reads:
 	    if currRead.individual != None:
                 if currRead.allele == None:
                     currRead.oneMatch(alleles,minNumberOfSeqsPerIndividual)
+            if currRead.allele != None:
+                numberMatching += 1
+        return(numberMatching)
     
     def oneMatch(self,alleles,minNumberOfSeqsPerIndividual):
         if self.individual.getSeqNr() < minNumberOfSeqsPerIndividual:
