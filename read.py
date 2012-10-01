@@ -58,6 +58,9 @@ class Read:
 	self.seq = Read.reverseComplementary(self.seq)
 	self.rev = not self.rev
 	
+    def isReversed(self):
+        return seq.rev
+	
     @staticmethod
     def getReads():
 	return Read._reads
@@ -83,7 +86,7 @@ class Read:
     @staticmethod
     def writeTo(path,showUnidentified=0):
 	o = open(path,'w')
-	o.write("seqName,individual,locus,allele")
+	o.write("seqName,sens,individual,locus,allele")
 	for currRead in Read._reads:
 	    currRead.oneWriteTo(o,showUnidentified)
 	    
@@ -101,7 +104,11 @@ class Read:
                 alleleName = self.allele
             else:
                 alleleName = '<unidentified>'
-	    output.write("\n" + self.name + "," + indivName + "," + locusName + "," + alleleName)
+            if self.rev:
+                sens = "R"
+            else:
+                sens = "F"
+	    output.write("\n" + self.name + "," + sens + "," + indivName + "," + locusName + "," + alleleName)
     
     @staticmethod
     def identify(IndividualClass):
