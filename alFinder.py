@@ -67,7 +67,7 @@ if int(ini['global']['iniVersion']) < INIVERSION:
     print("Your version of settings is too old. Please copy settings.sample.ini to settings.ini and update the settings.")
     sys.exit()
 
-    
+
 # sortie
 # ======
 # Fichier de sortie où seront écrits les résultats
@@ -84,15 +84,23 @@ def suffixFile(filename,suffix):
     extension = filename[-1]
     return("".join(begining) + suffix + "." + extension)
 
+def printAndLog(log,string):
+    print(string)
+    log.append(string+"\n")
     
-
+def printTheLog(log):
+    print(''.join(log))
 
 ### EXÉCUTION DES FONCTIONS ###
+
+log = list()
 
 print("Loading sequences from file " + ini['Files']['fastaSequences'] + "…"),
 sys.stdout.flush()
 read.Read.loadFromFile(ini['Files']['fastaSequences'])
 print("    [DONE]")
+printAndLog(log,"*** Input data: " +  str(read.Read.getNumberOfReads()) + " sequences loaded.")
+
 
 print("Loading individuals from file " + ini['Files']['tags'] + "…"),
 sys.stdout.flush()
@@ -111,8 +119,8 @@ sys.stdout.flush()
 (identifiedLoci,identifiedIndividuals) = read.Read.identify(individual.Individual)
 print("    [DONE]")
 
-print ("*** Identified Loci : " + str(identifiedLoci) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*identifiedLoci / float(read.Read.getNumberOfReads()))) + "%)" )
-print ("*** Identified Individuals : " + str(identifiedIndividuals) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*identifiedIndividuals / float(read.Read.getNumberOfReads()))) + "%)" )
+printAndLog(log,"*** Identified Loci: " + str(identifiedLoci) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*identifiedLoci / float(read.Read.getNumberOfReads()))) + "%)" )
+printAndLog(log,"*** Identified Individuals: " + str(identifiedIndividuals) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*identifiedIndividuals / float(read.Read.getNumberOfReads()))) + "%)" )
 
 
 ## getting alleles files
@@ -138,7 +146,7 @@ print("Sequences are now being associated to allelles…"),
 sys.stdout.flush()
 numberMatching = read.Read.match(individual.Individual._alleles,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
 print("    [DONE]")
-print ("*** Matching Read : " + str(numberMatching) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*numberMatching / float(read.Read.getNumberOfReads()))) + "%)" )
+printAndLog(log,"*** Matching Read (sequences assiociated with a known allele): " + str(numberMatching) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*numberMatching / float(read.Read.getNumberOfReads()))) + "%)" )
 
 
 if ini['AlleleDiscovering']['discovering'].upper() == "TRUE":
@@ -174,3 +182,7 @@ sys.stdout.flush()
 
 read.Read.writeTo(resultFile,int(ini['Results']['showUnidentified']),)
 print("    [DONE]")
+
+print("\n--- STATS ---")
+
+printTheLog(log)
