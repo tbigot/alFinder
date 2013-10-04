@@ -3,6 +3,7 @@
 import read
 import sys
 import re
+import operator
 
 class Individual:
     
@@ -10,10 +11,12 @@ class Individual:
     _tags = {}
     _nrLoci = 0
     _alleles = []
+    _allelesSortedBySize = []
     _lociRE = []
 
     _newAllelesPerIndividual = {}
     _newAlleles = []
+    _newAllelesSortedBySize=[]
     
     def __init__(self,name,tags):
 	self.unknownAlleles = {}
@@ -95,6 +98,13 @@ class Individual:
 	    sligne = ligne.rstrip().split(",")
 	    Individual._individuals.append(Individual(sligne[0],sligne[1:]))
 	Individual._nrLoci = len(Individual._individuals[0].getTags())
+	
+    
+    @staticmethod
+    def sortAllelesBySize(alleleSet,sortedAlleleSet):
+      for (currAlleles) in alleleSet:
+	sortedCurrAlleles = sorted(currAlleles, key=lambda k: len(currAlleles[k]),reverse=True)
+	sortedAlleleSet.append(sortedCurrAlleles)
 	
     @staticmethod
     def loadLociFromFiles(files):

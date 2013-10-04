@@ -134,8 +134,11 @@ allelesFilesF = []
 allelesFiles = iniDictToList(ini['Files']['Alleles'])
 for cFile in allelesFiles:
     allelesFilesF.append(open(cFile,"r"))
-
+    
 individual.Individual.loadLociFromFiles(allelesFilesF)
+
+#now alleles are loaded, sorting them by decreasing size
+individual.Individual.sortAllelesBySize(individual.Individual._alleles,individual.Individual._allelesSortedBySize)
 
 for currFile in allelesFilesF:
     currFile.close()
@@ -144,7 +147,7 @@ print("    [DONE]")
 
 print("Sequences are now being associated to allelles…"),
 sys.stdout.flush()
-numberMatching = read.Read.match(individual.Individual._alleles,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
+numberMatching = read.Read.match(individual.Individual._alleles,individual.Individual._allelesSortedBySize,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
 print("    [DONE]")
 printAndLog(log,"*** Matching Read (sequences assiociated with a known allele): " + str(numberMatching) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*numberMatching / float(read.Read.getNumberOfReads()))) + "%)" )
 
@@ -170,9 +173,12 @@ if ini['AlleleDiscovering']['discovering'].upper() == "TRUE":
     
     print("    [DONE]")
     
+    individual.Individual.sortAllelesBySize(individual.Individual._newAlleles,individual.Individual._newAllelesSortedBySize)
+    
+    
     print("Unidentified sequences are now being associated to new allelles…"),
     sys.stdout.flush()
-    numberMatching = read.Read.match(individual.Individual._newAlleles,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
+    numberMatching = read.Read.match(individual.Individual._newAlleles,individual.Individual._newAllelesSortedBySize,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
     print("    [DONE]")
     print ("*** Matching Read : " + str(numberMatching) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*numberMatching / float(read.Read.getNumberOfReads()))) + "%)" )
     

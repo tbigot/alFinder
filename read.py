@@ -150,21 +150,21 @@ class Read:
 	    
 	    
     @staticmethod
-    def match(alleles,minNumberOfSeqsPerIndividual):
+    def match(alleles,allelesSortedBySize,minNumberOfSeqsPerIndividual):
         numberMatching = 0
 	for currRead in Read._reads:
 	    if currRead.individual != None:
                 if currRead.allele == None:
-                    currRead.oneMatch(alleles,minNumberOfSeqsPerIndividual)
+                    currRead.oneMatch(alleles,allelesSortedBySize,minNumberOfSeqsPerIndividual)
             if currRead.allele != None:
                 numberMatching += 1
         return(numberMatching)
     
-    def oneMatch(self,alleles,minNumberOfSeqsPerIndividual):
+    def oneMatch(self,alleles,allelesSortedBySize,minNumberOfSeqsPerIndividual):
         if self.individual.getSeqNr() < minNumberOfSeqsPerIndividual:
             return
 	currAlleles = alleles[self.locus]
-	for currAlleleName in currAlleles.keys():
+	for currAlleleName in allelesSortedBySize[self.locus]:
 	    if currAlleles[currAlleleName] in self.seq:
 		self.allele = currAlleleName
 		break
