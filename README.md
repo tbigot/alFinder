@@ -2,12 +2,17 @@
 
 ##1) Downloading
 
-Download ALL documents from https://github.com/tbigot/alFinder and save them in the same folder (e.g. NGS_analysis)
+Download ALL documents from https://github.com/tbigot/alFinder and save them in the same folder (e.g. NGS_analysis).
+To perform this step, you can use git:
+
+  git clone https://github.com/tbigot/alFinder.git
+
+or the download  link on this repository website.
 
 
 ##2) Test the program with the example
 
-Try the demo first in the DEMO folder of the previously created folder (e.g. `NGS_analysis`)
+Try the demo first in the `example` folder of the previously created folder (e.g. `NGS_analysis`)
 
 
 1. In the example folder the user can find an example based on the method described in the following article:
