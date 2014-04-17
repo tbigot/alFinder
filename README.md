@@ -36,7 +36,7 @@ Ferrandiz-Rovira M, Bigot T, Allainé D, Callait-Cardinal M-P, Radwan J, Cohas A
     * the file `data_filteredResults.csv` is the obtained result after typing `python postprocessing.py` in the terminal
 
     
-##3) Use it your own data
+##3) Use it with your own data
 You run succesfully the demo, now try it on your own data
 1. Put your own data in the previously created folder (e.g. NGS_analysis):
  * a file with the output data from the sequencing machine
