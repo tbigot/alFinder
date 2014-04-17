@@ -5,14 +5,15 @@
 Download ALL documents from https://github.com/tbigot/alFinder and save them in the same folder (e.g. NGS_analysis)
 
 
-##2) Try the example
+##2) Test the program with the example
 
 Try the demo first in the DEMO folder of the previously created folder (e.g. `NGS_analysis`)
 
 
-1. In the DEMO folder the user can find an example based on the method described in the following article: 
-Large-scale genotyping by next generation sequencing: how to overcome the challenges to reliably genotype individuals?
+1. In the example folder the user can find an example based on the method described in the following article:
+> Large-scale genotyping by next generation sequencing: how to overcome the challenges to reliably genotype individuals?
 Ferrandiz-Rovira M, Bigot T, Allainé D, Callait-Cardinal M-P, Radwan J, Cohas A.
+
  * the file `data.fna` contains the output data from the sequencing machine
  * the file `tags.csv` contains the tags
  * the files `alleles_locus1.fas`, `alleles_locus2.fas`, `alleles_locus3.fas` and `alleles_locus4.fas` contain the previously described alleles for four loci
@@ -30,7 +31,7 @@ Ferrandiz-Rovira M, Bigot T, Allainé D, Callait-Cardinal M-P, Radwan J, Cohas A
     * the file `data_filteredResults.csv` is the obtained result after typing `python postprocessing.py` in the terminal
 
     
-##3) Use your own data
+##3) Use it your own data
 You run succesfully the demo, now try it on your own data
 1. Put your own data in the previously created folder (e.g. NGS_analysis):
  * a file with the output data from the sequencing machine
