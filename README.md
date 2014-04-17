@@ -5,7 +5,7 @@
 Download ALL documents from https://github.com/tbigot/alFinder and save them in the same folder (e.g. NGS_analysis).
 To perform this step, you can use git:
 
-  git clone https://github.com/tbigot/alFinder.git
+    git clone https://github.com/tbigot/alFinder.git
 
 or the download  link on this repository website.
 
