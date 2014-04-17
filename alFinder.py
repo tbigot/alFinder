@@ -8,7 +8,7 @@ import sys
 
 print("       __               \n _  | |_  o __  _| _  __\n(_| | |   | | |(_|(/_ | \n")
 
-INIVERSION = 4
+INIVERSION = 5
 
 
 # mini config parser inspired from http://www.decalage.info/fr/python/configparser
@@ -49,7 +49,7 @@ class ParseINI(dict):
     except KeyError:
       return []
       
-def iniDictToList(pdict):
+def minNumberOfSeqsPerIndividualctToList(pdict):
     rlist = []
     keys = pdict.keys()
     keys.sort()
@@ -66,6 +66,12 @@ except IOError, e:
 if int(ini['global']['iniVersion']) < INIVERSION: 
     print("Your version of settings is too old. Please copy settings.sample.ini to settings.ini and update the settings.")
     sys.exit()
+    
+    
+#FIXME: for compat purpose, might be deleted.
+
+minNumberOfSeqsPerIndividual = 1
+
 
 
 # sortie
@@ -109,8 +115,8 @@ print("    [DONE]")
 
 print("Loading loci markers…"),
 sys.stdout.flush()
-print(ini['LociMarkers'])
-individual.Individual.setLociMarkers(ini['LociMarkers'])
+print(ini['Primers'])
+individual.Individual.setLociMarkers(ini['Primers'])
 print("    [DONE]")
 
 
@@ -131,7 +137,7 @@ sys.stdout.flush()
 
 allelesFilesF = []
 
-allelesFiles = iniDictToList(ini['Files']['Alleles'])
+allelesFiles = minNumberOfSeqsPerIndividualctToList(ini['Files']['Alleles'])
 for cFile in allelesFiles:
     allelesFilesF.append(open(cFile,"r"))
     
@@ -147,7 +153,7 @@ print("    [DONE]")
 
 print("Sequences are now being associated to allelles…"),
 sys.stdout.flush()
-numberMatching = read.Read.match(individual.Individual._alleles,individual.Individual._allelesSortedBySize,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
+numberMatching = read.Read.match(individual.Individual._alleles,individual.Individual._allelesSortedBySize,int(minNumberOfSeqsPerIndividual))
 print("    [DONE]")
 printAndLog(log,"*** Matching Read (sequences assiociated with a known allele): " + str(numberMatching) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*numberMatching / float(read.Read.getNumberOfReads()))) + "%)" )
 
@@ -162,11 +168,11 @@ if ini['AlleleDiscovering']['discovering'].upper() == "TRUE":
         for cFile in allelesFiles:
             newAllelesFilesF.append(open(suffixFile(cFile,"_new"),"w"))
     else:
-        for cFile in alleleFiles:
+        for cFile in allelesFiles:
             newAllelesFilesF.append(open(cFile,"a"))
     
     
-    individual.Individual.discoverNewAlleles(newAllelesFilesF,iniDictToList(ini['AlleleDiscovering']['CropLengths']),int(ini['AlleleDiscovering']['threshold']))
+    individual.Individual.discoverNewAlleles(newAllelesFilesF,minNumberOfSeqsPerIndividualctToList(ini['AlleleDiscovering']['CropLengths']),int(ini['AlleleDiscovering']['threshold']))
     
     for currFile in newAllelesFilesF:
         currFile.close()
@@ -178,7 +184,7 @@ if ini['AlleleDiscovering']['discovering'].upper() == "TRUE":
     
     print("Unidentified sequences are now being associated to new allelles…"),
     sys.stdout.flush()
-    numberMatching = read.Read.match(individual.Individual._newAlleles,individual.Individual._newAllelesSortedBySize,int(ini['AlleleDiscovering']['minNumberOfSeqsPerIndividual']))
+    numberMatching = read.Read.match(individual.Individual._newAlleles,individual.Individual._newAllelesSortedBySize,int(minNumberOfSeqsPerIndividual))
     print("    [DONE]")
     print ("*** Matching Read : " + str(numberMatching) + "/" + str(read.Read.getNumberOfReads()) + " (" + str(int(100*numberMatching / float(read.Read.getNumberOfReads()))) + "%)" )
     

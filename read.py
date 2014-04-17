@@ -91,7 +91,7 @@ class Read:
     @staticmethod
     def writeTo(path,showUnidentified=0):
 	o = open(path,'w')
-	o.write("seqName,sens,individual,locus,allele")
+	o.write("seqName,strand,individual,locus,allele")
 	for currRead in Read._reads:
 	    currRead.oneWriteTo(o,showUnidentified)
 	    

@@ -84,6 +84,8 @@ class Individual:
         return(self.seqNr)
 	
     def addUnknownAllele(self,locus,sequence):
+	# cropping sequence
+	sequence[6:-6]
 	if not locus in self.unknownAlleles.keys():
 	    self.unknownAlleles[locus] = {}
 	if not sequence in self.unknownAlleles[locus].keys():
@@ -138,7 +140,7 @@ class Individual:
         for currLocus in Individual._newAllelesPerIndividual.keys():
             allelesToBeDeleted = []
             for currAllele in Individual._newAllelesPerIndividual[currLocus]:
-                if (len(currAllele)-(int(cropLengths[currLocus*2])+int(cropLengths[currLocus*2+1])))%3 != 0 or Individual._newAllelesPerIndividual[currLocus][currAllele] < threshold:
+                if (len(currAllele)-(int(cropLengths[currLocus*2])+int(cropLengths[currLocus*2+1])))%1 != 0 or Individual._newAllelesPerIndividual[currLocus][currAllele] < threshold:
                     allelesToBeDeleted.append(currAllele)
             for currATBD in allelesToBeDeleted:
                 Individual._newAllelesPerIndividual[currLocus].pop(currATBD)
