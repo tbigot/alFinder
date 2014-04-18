@@ -117,7 +117,7 @@ minNumberOfSeqsPerIndividual = 1
 
 resultFile = ini['Files']['fastaSequences'].split('.')[0] +"_result.csv"
 
-### DÉFINITION DE QUELQUES FONCTIONS ###
+### SOME FUNCTIONS ###
 
 def suffixFile(filename,suffix):
     filename = filename.split(".")
@@ -134,7 +134,8 @@ def printAndLog(log,string):
 def printTheLog(log):
     print(''.join(log))
 
-### EXÉCUTION DES FONCTIONS ###
+### EXECUTING THE IDENTIFICATION PROCESS ###
+### all these function are documented in the corresponding class file
 
 log = list()
 
