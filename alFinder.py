@@ -111,9 +111,9 @@ minNumberOfSeqsPerIndividual = 1
 
 
 
-# sortie
+# output
 # ======
-# Fichier de sortie où seront écrits les résultats
+# Output file in which the results will be written
 
 resultFile = ini['Files']['fastaSequences'].split('.')[0] +"_result.csv"
 
