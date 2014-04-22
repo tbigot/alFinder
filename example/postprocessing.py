@@ -51,6 +51,19 @@ outputFile = "data_filteredResults.csv"
 # !!! DO NOT MODIFY BELOW THIS LINE !!!!
 ########################################################################
 
+# Before anything, defining an output function to save the data
+# (intermediate)
+
+define writeData(filename):
+  dataOutput = open(filename,"w")
+  dataOutput.write("seqName,strand,individual,locus,allele\n")
+  for line in data:
+    dataOutput.write("".join(data)+"\n")
+  dataOutput.close()
+
+
+
+
 # After alFinder (available codes at https://github.com/tbigot/alFinder)
 ###################
 ### Reading the file
@@ -73,6 +86,9 @@ for currData in data:
     cleanedData.append(currData)
 
 data = cleanedData
+
+writeData("intermediateResults_no_singleton.csv")
+
 
 ##################
 ### Elimination of reads too short or too long
@@ -105,6 +121,9 @@ for currData in data:
     
 data = cleanedData
 
+writeData("intermediateResults_size.csv")
+
+
 #######################
 ### Rename new variants (e.g. indels) as previously described alleles
 if stepRename:
@@ -119,6 +138,9 @@ if stepRename:
       variantId[0] = corresp[variantId[0]]
       currRead[4] = ' '.join(variantId)
       
+
+writeData("intermediateResults_indels.csv")
+
 
 #######################
 ### Counting numbers of variant / locus / individual
@@ -176,6 +198,10 @@ for individual in count.keys():
     if len(count[individual]) == 0:
       count.pop(individual)
 
+writeData("intermediateResults_coverage.csv")
+
+
+
 # second round, according to minProportionOfMostPopularVariantPerIndividual
 for individual in count.keys():
   for locus in count[individual].keys():
@@ -188,7 +214,12 @@ for individual in count.keys():
   if len(count[individual]) == 0:
     count.pop(individual)
 
-### outputing results
+# outputing the sequences files
+writeData("intermediateResults_percentage.csv")
+
+
+
+### outputing results, not sequences but counts
 outputHandler = open(outputFile,"w")
 outputHandler.write("individual,locus,variant,count\n")
 for individual in count.keys():

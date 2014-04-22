@@ -3,9 +3,13 @@
 ######################################################################
 # SETTINGS HERE: Please modify according to your needs
 
+## This example is based on the method described in the article: 
+## Large-scale genotyping by next generation sequencing: how to overcome the challenges to reliably genotype individuals?
+## Ferrandiz-Rovira M, Bigot T, Allainé D, Callait-Cardinal M-P, Radwan J, Cohas A.
+
 ## Output data file from alFinder
 
-inputFile = "alFinder_data.csv"
+inputFile = "data_result.csv"
 
 # Elimination of reads too short or too long
 ## For each locus:
@@ -14,8 +18,10 @@ inputFile = "alFinder_data.csv"
 ##    3/specify max: the maximum length of reads to be kept
 
 readSizes = (
-  ("alleles_locus1.fas", min,max),
-  ("alleles_locus1.fas",min,max)
+  ("alleles_locus1.fas", 192,213),    # 95% and 105% of Mama-DRB1 alleles length
+  ("alleles_locus2.fas", 218,241),    # 95% and 105% of Mama-DRB2 alleles length
+  ("alleles_locus3.fas", 166,184),    # 95% and 105% of Mama-UB alleles length
+  ("alleles_locus4.fas", 171,189)     # 95% and 105% of Mama-UD alleles length
   )
 
 # Should new variants (e.g. indels) be renamed as previously described alleles 
@@ -25,25 +31,38 @@ stepRename = True
 correspondenceFile = "correspondenceData.csv"
 
 
-# Elimination of individuals with less than xx reads
+# Elimination of individuals with less than 12 reads
 
-minSeqPerIndividualPerLocus = xx	
+minSeqPerIndividualPerLocus = 12
 
-# Within an individuals and a locus: elimination of variants with less than yy reads per variant
+# Within an individuals and a locus: elimination of variants with less than 3 reads per variant
 
-minSeqPerIndividualPerLocusPerVariant = yy
+minSeqPerIndividualPerLocusPerVariant = 3
 
-# Within an individuals and a locus: elimination of variants present in less than zz% of the variant with the maximum number of reads
+# Within an individuals and a locus: elimination of variants present in less than 0.25% of the variant with the maximum number of reads
 
-minProportionOfMostPopularVariantPerIndividual = zz
+minProportionOfMostPopularVariantPerIndividual = 0.25
 
 ## Output file
 
-outputFile = "filteredResults.csv"
+outputFile = "data_filteredResults.csv"
 
 ########################################################################
 # !!! DO NOT MODIFY BELOW THIS LINE !!!!
 ########################################################################
+
+# Before anything, defining an output function to save the data
+# (intermediate)
+
+define writeData(filename):
+  dataOutput = open(filename,"w")
+  dataOutput.write("seqName,strand,individual,locus,allele\n")
+  for line in data:
+    dataOutput.write("".join(data)+"\n")
+  dataOutput.close()
+
+
+
 
 # After alFinder (available codes at https://github.com/tbigot/alFinder)
 ###################
@@ -68,6 +87,9 @@ for currData in data:
 
 data = cleanedData
 
+writeData("intermediateResults_no_singleton.csv")
+
+
 ##################
 ### Elimination of reads too short or too long
 import sys,string
@@ -76,22 +98,20 @@ readsToBeKept = list()
 
 for currReadSize in readSizes:
   fhandle = open(currReadSize[0])
-  ofHandle = open(currReadSize[0]+"_filtered","w")
+  ofhandle = open(currReadSize[0]+"_filtered","w")
   currSeq = []
   for ligne in fhandle:
       if ligne.startswith('>') or not ligne.endswith('\n'):
-	  if not len(currSeq) == 0:
-	      currSeqJoined = string.join(currSeq[1:],"")
-	      if len(currSeqJoined) <= currReadSize[2] and len(currSeqJoined) >= currReadSize[1]:
-		  ofhandle.write(currSeq[0]+"\t"+ str(len(currSeqJoined)) +"\n")
-		  for cfl in currSeq[1:]:
-		      ofhandle.write(cfl+"\n")
-		  print("Kept sequence "+currSeq[0]+" : length = "+ str(len(currSeqJoined)))
-		  readsToBeKept.append(currSeq[0])
-	      else:
-		  print("Rejected sequence "+currSeq[0]+" : length = "+ str(len(currSeqJoined)))
-	      currSeq = []
-      currSeq.append(ligne.strip())
+          if not len(currSeq) == 0:
+              currSeqJoined = string.join(currSeq[1:],"")
+              if len(currSeqJoined) <= currReadSize[2] and len(currSeqJoined) >= currReadSize[1]:
+                  ofhandle.write(currSeq[0]+"\t"+ str(len(currSeqJoined)) +"\n")
+                  for cfl in currSeq[1:]:
+                      ofhandle.write(cfl+"\n")
+                  readsToBeKept.append(currSeq[0].split()[0])
+              currSeq = []
+      currSeq.append(ligne.strip()[1:])
+
 
 #Now cleaning the data
 cleanedData = list()
@@ -100,6 +120,9 @@ for currData in data:
     cleanedData.append(currData)
     
 data = cleanedData
+
+writeData("intermediateResults_size.csv")
+
 
 #######################
 ### Rename new variants (e.g. indels) as previously described alleles
@@ -115,6 +138,9 @@ if stepRename:
       variantId[0] = corresp[variantId[0]]
       currRead[4] = ' '.join(variantId)
       
+
+writeData("intermediateResults_indels.csv")
+
 
 #######################
 ### Counting numbers of variant / locus / individual
@@ -151,7 +177,6 @@ for currRead in data:
 # with locus {"locus" -> [nbOfmostPopularVariant, variants]}
 # with variants {"variant" -> nb_seq}
 
-
 for individual in count.keys():
   for locus in count[individual].keys():
     nbSeqForThisLocus = count[individual][locus][0]
@@ -173,6 +198,10 @@ for individual in count.keys():
     if len(count[individual]) == 0:
       count.pop(individual)
 
+writeData("intermediateResults_coverage.csv")
+
+
+
 # second round, according to minProportionOfMostPopularVariantPerIndividual
 for individual in count.keys():
   for locus in count[individual].keys():
@@ -185,9 +214,16 @@ for individual in count.keys():
   if len(count[individual]) == 0:
     count.pop(individual)
 
-### outputing results
+# outputing the sequences files
+writeData("intermediateResults_percentage.csv")
+
+
+
+### outputing results, not sequences but counts
 outputHandler = open(outputFile,"w")
+outputHandler.write("individual,locus,variant,count\n")
 for individual in count.keys():
   for locus in count[individual].keys():
     for variant in count[individual][locus][1].keys():
-      outputHandler.write(individual + "," + locus + "," + variant + "," + str(count[individual][locus][1][variant]))
+      outputHandler.write(individual + "," + locus + "," + variant + "," + str(count[individual][locus][1][variant])+"\n")
+outputHandler.close()
