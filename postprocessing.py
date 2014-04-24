@@ -54,11 +54,11 @@ outputFile = "data_filteredResults.csv"
 # Before anything, defining an output function to save the data
 # (intermediate)
 
-define writeData(filename):
+def writeData(filename):
   dataOutput = open(filename,"w")
   dataOutput.write("seqName,strand,individual,locus,allele\n")
   for line in data:
-    dataOutput.write("".join(data)+"\n")
+    dataOutput.write("".join(line)+"\n")
   dataOutput.close()
 
 
@@ -102,14 +102,14 @@ for currReadSize in readSizes:
   currSeq = []
   for ligne in fhandle:
       if ligne.startswith('>') or not ligne.endswith('\n'):
-          if not len(currSeq) == 0:
-              currSeqJoined = string.join(currSeq[1:],"")
-              if len(currSeqJoined) <= currReadSize[2] and len(currSeqJoined) >= currReadSize[1]:
-                  ofhandle.write(currSeq[0]+"\t"+ str(len(currSeqJoined)) +"\n")
-                  for cfl in currSeq[1:]:
-                      ofhandle.write(cfl+"\n")
-                  readsToBeKept.append(currSeq[0].split()[0])
-              currSeq = []
+	  if not len(currSeq) == 0:
+	      currSeqJoined = string.join(currSeq[1:],"")
+	      if len(currSeqJoined) <= currReadSize[2] and len(currSeqJoined) >= currReadSize[1]:
+		  ofhandle.write(currSeq[0]+"\t"+ str(len(currSeqJoined)) +"\n")
+		  for cfl in currSeq[1:]:
+		      ofhandle.write(cfl+"\n")
+		  readsToBeKept.append(currSeq[0].split()[0])
+	      currSeq = []
       currSeq.append(ligne.strip()[1:])
 
 

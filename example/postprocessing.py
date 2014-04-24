@@ -54,11 +54,11 @@ outputFile = "data_filteredResults.csv"
 # Before anything, defining an output function to save the data
 # (intermediate)
 
-define writeData(filename):
+def writeData(filename):
   dataOutput = open(filename,"w")
   dataOutput.write("seqName,strand,individual,locus,allele\n")
   for line in data:
-    dataOutput.write("".join(data)+"\n")
+    dataOutput.write("".join(line)+"\n")
   dataOutput.close()
 
 
