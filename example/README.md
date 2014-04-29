@@ -2,6 +2,8 @@
 
 ##1) Downloading
 
+### Instructions
+
 Download ALL documents from https://github.com/tbigot/alFinder and save them in the same folder (e.g. NGS_analysis).
 To perform this step, you can use git:
 
@@ -9,6 +11,54 @@ To perform this step, you can use git:
 
 or the download link on this repository website.
 
+### Package tree view
+
+    ├── alFinder.py
+    ├── COPYING
+    ├── data
+    │   ├── 1.fas
+    │   ├── 1_result.csv
+    │   ├── 1_unknownAlleles.csv
+    │   ├── 2.TCA.454Reads.fna
+    │   ├── Mama-DRB1.fas
+    │   ├── Mama-DRB1_new.fas
+    │   ├── Mama-DRB2.fas
+    │   ├── Mama-DRB2_new.fas
+    │   ├── Mama-UB.fas
+    │   ├── Mama-UB_new.fas
+    │   ├── Mama-UD.fas
+    │   ├── Mama-UD_new.fas
+    │   ├── tags.csv
+    │   └── tagsRun1.csv
+    ├── example
+    │   ├── alleles_locus1.fas
+    │   ├── alleles_locus2.fas
+    │   ├── alleles_locus3.fas
+    │   ├── alleles_locus4.fas
+    │   ├── correspondenceData.csv
+    │   ├── data.fna
+    │   ├── output_example
+    │   │   ├── alleles_locus1.fas_filtered
+    │   │   ├── alleles_locus2.fas_filtered
+    │   │   ├── alleles_locus3.fas_filtered
+    │   │   ├── alleles_locus4.fas_filtered
+    │   │   ├── data_filteredResults.csv
+    │   │   └── data_result.csv
+    │   ├── postprocessing.py
+    │   ├── README.md
+    │   ├── settings.ini
+    │   └── tags.csv
+    ├── individual.py
+    ├── individual.pyc
+    ├── postprocessing.py
+    ├── README.md
+    ├── read.py
+    ├── settings.ini
+    └── settings.sample.ini
+
+### Requirements
+
+Works on any system with [python](https://www.python.org/) available.
 
 ##2) Test the program with the example
 
@@ -34,6 +84,7 @@ Ferrandiz-Rovira M, Bigot T, Allainé D, Callait-Cardinal M-P, Radwan J, Cohas A
 7. You can find the results in the previously created folder (e.g. `NGS_analysis/example`)
     * the file `data_result.csv` is the obtained result after typing `python alFinder.py` in the terminal
     * the file `data_filteredResults.csv` is the obtained result after typing `python postprocessing.py` in the terminal
+    * the files `intermediateResults` are generated after each step (see article)
 
     
 ##3) Use it with your own data
