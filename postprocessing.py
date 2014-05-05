@@ -110,7 +110,7 @@ for currReadSize in readSizes:
 		      ofhandle.write(cfl+"\n")
 		  readsToBeKept.append(currSeq[0].split()[0])
 	      currSeq = []
-      currSeq.append(ligne.strip()[1:])
+      currSeq.append(ligne.strip()[0:])
 
 
 #Now cleaning the data
