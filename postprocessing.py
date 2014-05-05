@@ -98,7 +98,7 @@ readsToBeKept = list()
 
 for currReadSize in readSizes:
   fhandle = open(currReadSize[0])
-  ofhandle = open(currReadSize[0]+"_filtered","w")
+  ofhandle = open(currReadSize[0][:-4]+"_filtered.fas","w")
   currSeq = []
   for ligne in fhandle:
       if ligne.startswith('>') or not ligne.endswith('\n'):
