@@ -76,12 +76,13 @@ Ferrandiz-Rovira M, Bigot T, Allainé D, Callait-Cardinal M-P, Radwan J, Cohas A
  * the `output_example` folder contains outputs from the example settings
  * the file `settings.ini` is modified according to the method described in the article and is ready to be use
  * the file `postprocessing.py` is modified according to the method described in the article and is ready to be use
-2. Open the terminal (if python is not installed in your computer please download and install it on https://www.python.org/)
-3. Use the command `cd` or `C:` depending on the operating system of your computer (linux/mac and Windows) to go in the directory where ALL downloaded documents have been saved (e.g. cd /home/NGS_analysis/example)
-4. Call `alFinder.py` file in the terminal (type `python alFinder.py` in the terminal)
-5. Call `postprocessing.py` file in the terminal (type `python postprocessing.py` in the terminal)
-6. Close the terminal
-7. You can find the results in the previously created folder (e.g. `NGS_analysis/example`)
+2. Copy all the python files (`alFinder.py`, `individual.py`, `read.py`, `postprocessing.py`) to the example directory
+3. Open the terminal (if python is not installed in your computer please download and install it on https://www.python.org/)
+4. Use the command `cd` or `C:` depending on the operating system of your computer (linux/mac and Windows) to go in the directory where ALL downloaded documents have been saved (e.g. cd /home/NGS_analysis/example)
+5. Call `alFinder.py` file in the terminal (type `python alFinder.py` in the terminal)
+6. Call `postprocessing.py` file in the terminal (type `python postprocessing.py` in the terminal)
+7. Close the terminal
+8. You can find the results in the previously created folder (e.g. `NGS_analysis/example`)
     * the file `data_result.csv` is the obtained result after typing `python alFinder.py` in the terminal
     * the file `data_filteredResults.csv` is the obtained result after typing `python postprocessing.py` in the terminal
     * the files `intermediateResults` are generated after each step (see article)
