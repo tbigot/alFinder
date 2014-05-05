@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright or © or Copr. Université Claude Bernard Lyon 1
 # contributor : Thomas Bigot (2012-2014)
 #
