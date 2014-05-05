@@ -66,11 +66,11 @@ First try the demonstration, located in the `example` folder of the previously c
 
 
 1. In the `example` folder the user can find an example based on the method described in the following article:
-
+ 
  > Large-scale genotyping by next generation sequencing: how to overcome the challenges to reliably genotype individuals?
  
  Ferrandiz-Rovira M, Bigot T, Allainé D, Callait-Cardinal M-P, Radwan J, Cohas A.
-
+ 
  * the file `data.fna` contains the output data from the sequencing machine
  * the file `tags.csv` contains the tags
  * the files `alleles_locus1.fas`, `alleles_locus2.fas`, `alleles_locus3.fas` and `alleles_locus4.fas` contain the previously described alleles for four loci
