@@ -78,7 +78,6 @@ for currLine in dataFile:
 #removing the headline
 data.pop(0)
 
-
 ### Elimination of singletons
 cleanedData = list()
 for currData in data:
@@ -86,7 +85,6 @@ for currData in data:
     cleanedData.append(currData)
 
 data = cleanedData
-
 writeData("intermediateResults_no_singleton.csv")
 
 
@@ -108,7 +106,10 @@ for currReadSize in readSizes:
 		  ofhandle.write(currSeq[0]+"\t"+ str(len(currSeqJoined)) +"\n")
 		  for cfl in currSeq[1:]:
 		      ofhandle.write(cfl+"\n")
-		  readsToBeKept.append(currSeq[0].split()[0])
+		  readsToBeKept.append(currSeq[0].split()[0][1:])
+		  # print(str(len(currSeqJoined))+ " accepted; needed " + str(currReadSize[2]) + " - " + str(currReadSize[1]))
+	      #else:
+		  # print(str(len(currSeqJoined))+ " rejected; needed " + str(currReadSize[2]) + " - " + str(currReadSize[1]))
 	      currSeq = []
       currSeq.append(ligne.strip()[0:])
 
