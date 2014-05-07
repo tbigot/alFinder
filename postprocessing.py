@@ -58,7 +58,8 @@ def writeData(filename):
   dataOutput = open(filename,"w")
   dataOutput.write("seqName,strand,individual,locus,allele\n")
   for line in data:
-    dataOutput.write(",".join(line)+"\n")
+    if len(line) > 0:
+      dataOutput.write(",".join(line)+"\n")
   dataOutput.close()
 
 
