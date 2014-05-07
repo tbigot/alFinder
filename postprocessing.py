@@ -60,6 +60,8 @@ def writeData(filename):
   for line in data:
     if len(line) > 0:
       dataOutput.write(",".join(line)+"\n")
+      if ",".join(line).count(",") < 1:
+	print(line)
   dataOutput.close()
 
 
@@ -112,7 +114,7 @@ for currReadSize in readSizes:
 	      #else:
 		  # print(str(len(currSeqJoined))+ " rejected; needed " + str(currReadSize[2]) + " - " + str(currReadSize[1]))
 	      currSeq = []
-      currSeq.append(ligne.strip()[0:])
+      currSeq.append(ligne.strip())
 
 
 #Now cleaning the data
@@ -132,7 +134,7 @@ if stepRename:
   corresp = dict()
   correspFile = open(correspondenceFile)
   for currCorr in correspFile:
-    splitCorr = currCorr.split(",")
+    splitCorr = currCorr.strip().split(",")
     corresp[splitCorr[0]] = splitCorr[1]
   for currRead in data:
     variantId = currRead[4].split()
