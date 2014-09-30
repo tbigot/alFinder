@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from math import factorial,pow,log
+
+
 ######################################################################
 # SETTINGS HERE: Please modify according to your needs
 
@@ -43,9 +46,14 @@ minSeqPerIndividualPerLocusPerVariant = 3
 
 minProportionOfMostPopularVariantPerIndividual = 0.25
 
+
+# errorRate
+errorRate = 0.001
+
 ## Output file
 
-outputFile = "data_filteredResults.csv"
+outputFile = "likelihood_HomoHetero.csv"
+unfilteredResults = "likelihood_all_beforeDecision.csv"
 
 ########################################################################
 # !!! DO NOT MODIFY BELOW THIS LINE !!!!
@@ -198,36 +206,91 @@ for individual in count.keys():
       if len(count[individual][locus][1]) == 0:
         count[individual].pop(locus)
       else:
+        #updating the nb of most popular nbOfMostPopular
         count[individual][locus][0] = nbOfMostPopular
     if len(count[individual]) == 0:
       count.pop(individual)
 
 writeData("intermediateResults_coverage.csv")
 
+lkfile = open(outputFile,"w")
+lkfile.write("individual,locus,homozygote,allele1,allele2,loglk,totalCoverage,allele1Count,allele2Count,otherVariantsSum")
+logFile = open(unfilteredResults,"w")
+logFile.write("individual,locus,homozygousAllele,heterozygousAllele1,heterozygousAllele2,logLikelihood")
 
-
-# second round, according to minProportionOfMostPopularVariantPerIndividual
 for individual in count.keys():
+  # computing homozygosity
   for locus in count[individual].keys():
-    nbOfMostPopular = float(count[individual][locus][0])
+    bestLogLkHomo = -99999
     for variant in count[individual][locus][1].keys():
-      if (float(count[individual][locus][1][variant]) / nbOfMostPopular) < float(minProportionOfMostPopularVariantPerIndividual):
-        count[individual][locus][1].pop(variant)
-    if len(count[individual][locus][1]) == 0:
-      count[individual].pop(locus)
-  if len(count[individual]) == 0:
-    count.pop(individual)
+      otherVariants = count[individual][locus][1].keys()
+      otherVariants.remove(variant)
+      variantCount = count[individual][locus][1][variant]
+      # getting otherVariantsCounts
+      otherVariantsCounts = []
+      for currOtherVariant in otherVariants:
+        otherVariantsCounts.append(count[individual][locus][1][currOtherVariant])
+      ## Computing some numbers
+      # total numbers, n in Hohenlohe2010
+      ntotal = sum(otherVariantsCounts)+variantCount
+      # product of factorials (n1!n2!n3!n4! in Hohenlohe2010)
+      prodFact = factorial(variantCount)
+      for nx in otherVariantsCounts:
+        prodFact *= factorial(nx)
+      nbOtherVariants = len(otherVariantsCounts)
+      nbVariants = nbOtherVariants+1
+      likelihood = (factorial(ntotal)/(prodFact)) * pow((1-nbOtherVariants*errorRate/nbVariants),variantCount)*pow((errorRate/(nbVariants)),sum(otherVariantsCounts))
+      if(likelihood != 0):
+        print("\nHomozygote " + variant + " " + str(variantCount) + "\nOther variants "+ str(otherVariants) + " " + str(otherVariantsCounts))
+        print("lik=" + str(log(likelihood)))
+        print("ntotal = " + str(ntotal))
+        if log(likelihood) > bestLogLkHomo:
+          bestLogLkHomo = log(likelihood)
+          bestVariant = variant
+          bestVariantCount = variantCount
+          bestOtherVariantsSum = sum(otherVariantsCounts)
+      logFile.write("\n" + individual + "," + locus + "," + variant + ",,," + str(log(likelihood) if likelihood != 0 else -99999))
+    
+    # computing homozygosity
+    bestLogLkHetero = -99999
+    nbVariants = len(count[individual][locus][1])
+    if(nbVariants >= 2):
+      for i in range(nbVariants):
+        for j in range(i+1,nbVariants):
+          variant1 = count[individual][locus][1].keys()[i]
+          variant2 = count[individual][locus][1].keys()[j]
+          otherVariants = count[individual][locus][1].keys()
+          otherVariants.remove(variant1)
+          otherVariants.remove(variant2)
+          variant1Count = count[individual][locus][1][variant1]
+          variant2Count = count[individual][locus][1][variant2]
+          # getting otherVariantsCounts
+          otherVariantsCounts = []
+          for currOtherVariant in otherVariants:
+            otherVariantsCounts.append(count[individual][locus][1][currOtherVariant])
+          
+          ## Computing some numbers
+          # total numbers, n in Hohenlohe2010
+          ntotal = sum(otherVariantsCounts)+variant1Count+variant2Count
+          # product of factorials (n1!n2!n3!n4! in Hohenlohe2010)
+          prodFact = factorial(variant1Count) * factorial(variant2Count)
+          for nx in otherVariantsCounts:
+            prodFact *= factorial(nx)
+          nbOtherVariants = len(otherVariantsCounts)
+          nbVariants = nbOtherVariants+1
+          likelihood = (factorial(ntotal)/(prodFact)) * pow((.5-errorRate/nbVariants),(variant1Count+variant2Count))*pow((errorRate/(nbVariants)),sum(otherVariantsCounts))
+          if(likelihood != 0):
+            print("\nHétérozygote 1 " + variant1 + " " + str(variant1Count) + "\n2 " + variant2 + " "+ str(variant2Count) + "\nOther V "+ str(otherVariants) + " -> " + str(otherVariantsCounts))
+            print("lik=" + str(log(likelihood)))
+            print("ntotal = " + str(ntotal))
+            if log(likelihood) > bestLogLkHetero:
+              bestLogLkHetero = log(likelihood)
+              bestVariant1 = variant1
+              bestVariant2 = variant2
+              bestVariant1Count = variant1Count
+              bestVariant2Count = variant2Count
+              bestOtherVariantsSum = sum(otherVariantsCounts)
+          logFile.write("\n" + individual + "," + locus + ",," + variant1 + "," + variant2 + "," + str(log(likelihood) if likelihood != 0 else -99999))
+    homo = (bestLogLkHetero < bestLogLkHomo)
+    lkfile.write("\n" + individual + "," + locus + "," + ("1" if homo else "0") + "," + (bestVariant if homo else bestVariant1) + "," + ("NA" if homo else bestVariant2)+ "," + str(bestLogLkHomo if homo else bestLogLkHetero) + "," + str(ntotal) + "," + str(bestVariantCount if homo else bestVariant1Count) + "," + str(0 if homo else bestVariant2Count) + "," + str(bestOtherVariantsSum))
 
-# outputing the sequences files
-writeData("intermediateResults_percentage.csv")
-
-
-
-### outputing results, not sequences but counts
-outputHandler = open(outputFile,"w")
-outputHandler.write("individual,locus,variant,count\n")
-for individual in count.keys():
-  for locus in count[individual].keys():
-    for variant in count[individual][locus][1].keys():
-      outputHandler.write(individual + "," + locus + "," + variant + "," + str(count[individual][locus][1][variant])+"\n")
-outputHandler.close()
