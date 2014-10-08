@@ -213,7 +213,7 @@ for individual in count.keys():
 writeData("intermediateResults_coverage.csv")
 
 lkfile = open(outputFile,"w")
-lkfile.write("individual,locus,homozygote,significance,allele1,allele2,loglk,totalCoverage,allele1Count,allele2Count,otherVariantsSum")
+lkfile.write("individual,locus,homozygote,isSignificant,LRT_value,allele1,allele2,loglk,totalCoverage,allele1Count,allele2Count,otherVariantsSum")
 logFile = open(unfilteredResults,"w")
 logFile.write("individual,locus,homozygousAllele,heterozygousAllele1,heterozygousAllele2,logLikelihood")
 
@@ -290,12 +290,8 @@ for individual in count.keys():
               bestVariant2Count = variant2Count
               bestOtherVariantsSum = sum(otherVariantsCounts)
           logFile.write("\n" + individual + "," + locus + ",," + variant1 + "," + variant2 + "," + str(log(likelihood) if likelihood != 0 else -99999))
-    Dhomo = 2*bestLogLkHomo - 2*bestLogLkHetero 
-    print("Dhomo : " + str(Dhomo))
-    homoSig = Dhomo > 3.84
-    Dhetero = - 2*bestLogLkHomo + 2*bestLogLkHetero
-    print("Dhetero : " + str(Dhetero))
-    heteroSig = Dhetero > 3.84
+    LRT = 2*max(bestLogLkHomo,bestLogLkHetero) - 2*min(bestLogLkHomo,bestLogLkHetero)
+    significance = LRT > 3.84
     homo = (bestLogLkHetero < bestLogLkHomo)
-    lkfile.write("\n" + individual + "," + locus + "," + ("1" if homo else "0") + "," + ("True" if ((homo and homoSig) or (not homo and heteroSig)) else str(Dhomo if homo else Dhetero)) + "," + (bestVariant if homo else bestVariant1) + "," + ("NA" if homo else bestVariant2)+ "," + str(bestLogLkHomo if homo else bestLogLkHetero) + "," + str(ntotal) + "," + str(bestVariantCount if homo else bestVariant1Count) + "," + str(0 if homo else bestVariant2Count) + "," + str(bestOtherVariantsSum))
+    lkfile.write("\n" + individual + "," + locus + "," + ("1" if homo else "0") + "," + str(significance) + "," + str(LRT)+ "," + (bestVariant if homo else bestVariant1) + "," + ("NA" if homo else bestVariant2)+ "," + str(bestLogLkHomo if homo else bestLogLkHetero) + "," + str(ntotal) + "," + str(bestVariantCount if homo else bestVariant1Count) + "," + str(0 if homo else bestVariant2Count) + "," + str(bestOtherVariantsSum))
 
