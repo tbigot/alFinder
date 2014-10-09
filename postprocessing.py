@@ -240,9 +240,9 @@ for individual in count.keys():
       nbVariants = nbOtherVariants+1
       likelihood = (factorial(ntotal)/(prodFact)) * pow((1-nbOtherVariants*errorRate/nbVariants),variantCount)*pow((errorRate/(nbVariants)),sum(otherVariantsCounts))
       if(likelihood != 0):
-        print("\nHomozygote " + variant + " " + str(variantCount) + "\nOther variants "+ str(otherVariants) + " " + str(otherVariantsCounts))
-        print("lik=" + str(log(likelihood)))
-        print("ntotal = " + str(ntotal))
+        #print("\nHomozygote " + variant + " " + str(variantCount) + "\nOther variants "+ str(otherVariants) + " " + str(otherVariantsCounts))
+        #print("lik=" + str(log(likelihood)))
+        #print("ntotal = " + str(ntotal))
         if log(likelihood) > bestLogLkHomo:
           bestLogLkHomo = log(likelihood)
           bestVariant = variant
@@ -250,7 +250,7 @@ for individual in count.keys():
           bestOtherVariantsSum = sum(otherVariantsCounts)
       logFile.write("\n" + individual + "," + locus + "," + variant + ",,," + str(log(likelihood) if likelihood != 0 else -99999))
     
-    # computing homozygosity
+    # computing heterozygocity
     bestLogLkHetero = -99999
     nbVariants = len(count[individual][locus][1])
     if(nbVariants >= 2):
@@ -275,13 +275,11 @@ for individual in count.keys():
           prodFact = factorial(variant1Count) * factorial(variant2Count)
           for nx in otherVariantsCounts:
             prodFact *= factorial(nx)
-          nbOtherVariants = len(otherVariantsCounts)
-          nbVariants = nbOtherVariants+1
           likelihood = (factorial(ntotal)/(prodFact)) * pow((.5-errorRate/nbVariants),(variant1Count+variant2Count))*pow((errorRate/(nbVariants)),sum(otherVariantsCounts))
           if(likelihood != 0):
-            print("\nHétérozygote 1 " + variant1 + " " + str(variant1Count) + "\n2 " + variant2 + " "+ str(variant2Count) + "\nOther V "+ str(otherVariants) + " -> " + str(otherVariantsCounts))
-            print("lik=" + str(log(likelihood)))
-            print("ntotal = " + str(ntotal))
+            #print("\nHétérozygote 1 " + variant1 + " " + str(variant1Count) + "\n2 " + variant2 + " "+ str(variant2Count) + "\nOther V "+ str(otherVariants) + " -> " + str(otherVariantsCounts))
+            #print("lik=" + str(log(likelihood)))
+            #print("ntotal = " + str(ntotal))
             if log(likelihood) > bestLogLkHetero:
               bestLogLkHetero = log(likelihood)
               bestVariant1 = variant1
