@@ -21,30 +21,30 @@ inputFile = "data_result.csv"
 ##    3/specify max: the maximum length of reads to be kept
 
 readSizes = (
-  ("alleles_locus1.fas", 192,213),    # 95% and 105% of Mama-DRB1 alleles length
-  ("alleles_locus2.fas", 218,241),    # 95% and 105% of Mama-DRB2 alleles length
-  ("alleles_locus3.fas", 166,184),    # 95% and 105% of Mama-UB alleles length
-  ("alleles_locus4.fas", 171,189)     # 95% and 105% of Mama-UD alleles length
+  ("alleles_locus1.fas", min,max),                  # see postprocessing.py in the EXAMPLE folder for example
+  ("alleles_locus2.fas", min,max),
+  ("alleles_locus3.fas", min,max),
+  ("alleles_locus4.fas", min,max)
   )
 
 # Should new variants (e.g. indels) be renamed as previously described alleles 
 
 stepRename = True
 # If true provide a file with the correspondence between new variants (e.g. indels) names and names of previously decribed alleles
-correspondenceFile = "correspondenceData.csv"
+correspondenceFile = "correspondenceData.csv"       # see postprocessing.py in the EXAMPLE folder for example
 
 
-# Elimination of individuals with less than 12 reads
+# Elimination of individuals with less than XX reads
 
-minSeqPerIndividualPerLocus = 12
+minSeqPerIndividualPerLocus = xx                      # see postprocessing.py in the EXAMPLE folder for example
 
-# Within an individuals and a locus: elimination of variants with less than 3 reads per variant
+# Within an individuals and a locus: elimination of variants with less than yy reads per variant
 
-minSeqPerIndividualPerLocusPerVariant = 3
+minSeqPerIndividualPerLocusPerVariant = yy            # see postprocessing.py in the EXAMPLE folder for example
 
-# errorRate: sequencing error rate per nucleotide
+# errorRate: sequencing error rate per nucleotide (zz)
 
-errorRate = 0.001
+errorRate = zz                                        # see postprocessing.py in the EXAMPLE folder for example
 
 # Calculate all possible combinations of homozygous and heterozygous genotypes for a given amplicon based on the obtained variants per amplicon
 unfilteredResults = "likelihood_all_beforeDecision.csv"
@@ -52,6 +52,7 @@ unfilteredResults = "likelihood_all_beforeDecision.csv"
 ## Output file
 
 outputFile = "data_filteredResults.csv"
+
 
 
 ########################################################################

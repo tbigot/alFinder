@@ -44,7 +44,7 @@ minSeqPerIndividualPerLocusPerVariant = 3
 
 # errorRate: sequencing error rate per nucleotide
 
-errorRate = 0.001
+errorRate = 0.03
 
 # Calculate all possible combinations of homozygous and heterozygous genotypes for a given amplicon based on the obtained variants per amplicon
 unfilteredResults = "likelihood_all_beforeDecision.csv"
